@@ -15,7 +15,7 @@
 #endif
 #endif
 
-const int c_nDEFFILES_NUM = 7;
+const int c_nDEFFILES_NUM = 20;
 const int c_nDEFNAME_LENGTH = 30;
 const int c_nTECHNAME_LENGTH = 60;
 const int c_nFILENAME_LENGTH = 60;

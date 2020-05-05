@@ -40,13 +40,26 @@ CNcAdvTaskMngTarget* CNcAdvTaskMngTarget::m_pTarget = NULL;
 // 默认文件信息
 DefFileInfo CNcAdvTaskMngTarget::m_DefFileInfo[c_nDEFFILES_NUM] =
 {
-	{_T("内仁"),	_T("TOP"),	WORKCOOR_G54,	0},
-	{_T("底面"),	_T("BOT"),	WORKCOOR_G54,	0},
-	{_T("内腰"),	_T("IN"),	WORKCOOR_G55,	0},
-	{_T("鞋头"),	_T("FN"),	WORKCOOR_G55,	90},
-	{_T("外腰"),	_T("OUT"),	WORKCOOR_G55,	180},
-	{_T("鞋跟"),	_T("BK"),	WORKCOOR_G55,	270},
-	{_T("曼曼"),	_T("manman"),	WORKCOOR_G55,	270},
+	{_T("内仁"),	_T("TOP"),		WORKCOOR_G54,	0},
+	{_T("底面"),	_T("BOT"),		WORKCOOR_G54,	0},
+	{_T("内腰"),	_T("IN"),		WORKCOOR_G55,	0},
+	{_T("鞋头"),	_T("FN"),		WORKCOOR_G55,	90},
+	{_T("外腰"),	_T("OUT"),		WORKCOOR_G55,	180},
+	{_T("鞋跟"),	_T("BK"),		WORKCOOR_G55,	270},
+	{_T("工序1"),	_T("ZDY1"),		WORKCOOR_G54,	0},
+	{_T("工序2"),	_T("ZDY2"),		WORKCOOR_G54,	0},
+	{_T("工序3"),	_T("ZDY3"),		WORKCOOR_G54,	0},
+	{_T("工序4"),	_T("ZDY4"),		WORKCOOR_G54,	0},
+	{_T("工序5"),	_T("ZDY5"),		WORKCOOR_G54,	0},
+	{_T("工序6"),	_T("ZDY6"),		WORKCOOR_G54,	0},
+	{_T("工序7"),	_T("ZDY7"),		WORKCOOR_G54,	0},
+	{_T("工序8"),	_T("ZDY8"),		WORKCOOR_G54,	0},
+	{_T("工序9"),	_T("ZDY9"),		WORKCOOR_G54,	0},
+	{_T("工序10"),	_T("ZDY10"),	WORKCOOR_G54,	0},
+	{_T("工序11"),	_T("ZDY11"),	WORKCOOR_G54,	0},
+	{_T("工序12"),	_T("ZDY12"),	WORKCOOR_G54,	0},
+	{_T("工序13"),	_T("ZDY13"),	WORKCOOR_G54,	0},
+	{_T("工序14"),	_T("ZDY14"),	WORKCOOR_G54,	0},
 };
 
 //英文版本下工艺名信息

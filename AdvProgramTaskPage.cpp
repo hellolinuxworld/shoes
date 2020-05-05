@@ -635,13 +635,26 @@ void CAdvProgramTaskPage::UpdateTaskFileList(bool bSelRst_/* = false*/)
 	}
 
 	m_pwndList->DeleteAllItems();
-	int _nSize = m_pAdvTask->m_vecFiles.size();
-	for (int _i = 0; _i < _nSize; _i++)
+	int _nVecFileSize = m_pAdvTask->m_vecFiles.size();
+
+	// _nCountUser 用户要显示的列表个数
+	
+	int _nIndex = 0
+	for (; _nIndex < _nVecFileSize; _nIndex++)
 	{
-		AdvFileNode* _pFileNode = &m_pAdvTask->m_vecFiles.at(_i);
+		if (_nIndex == _nCountUser) 
+		{
+			_nIndex = c_nDEFFILES_NUM;
+			if (_nIndex >= _nVecFileSize)
+			{
+				break;
+			}
+		}
+
+		AdvFileNode* _pFileNode = &m_pAdvTask->m_vecFiles.at(_nIndex);
 		LV_ITEM lvi;
 		lvi.mask = LVIF_TEXT | LVIF_IMAGE | LVIF_PARAM;
-		lvi.iItem = _i;
+		lvi.iItem = _nIndex;
 		lvi.iSubItem = TFCOL_TECHNOLOGY;
 		lvi.pszText = _pFileNode->szTechName;
 		// 工艺
@@ -650,10 +663,10 @@ void CAdvProgramTaskPage::UpdateTaskFileList(bool bSelRst_/* = false*/)
 		if (_pFileNode->szFileName[0] != 0)
 		{
 			BOOL _bCheck = _pFileNode->bEnable ? TRUE : FALSE;
-			m_pwndList->SetCheck(_i, _bCheck);
+			m_pwndList->SetCheck(_nIndex, _bCheck);
 
 			// 加工文件名
-			m_pwndList->SetItemText(_i, TFCOL_PROGRAMNAME, _pFileNode->szFileName);
+			m_pwndList->SetItemText(_nIndex, TFCOL_PROGRAMNAME, _pFileNode->szFileName);
 
 			CString _strTmp;
 			// 坐标系
@@ -672,14 +685,14 @@ void CAdvProgramTaskPage::UpdateTaskFileList(bool bSelRst_/* = false*/)
 			{
 				ASSERT(FALSE);
 			}
-			m_pwndList->SetItemText(_i, TFCOL_COORNO, _strTmp);
+			m_pwndList->SetItemText(_nIndex, TFCOL_COORNO, _strTmp);
 
 			// A轴工件坐标
 			CString _strWC;
 			_strWC.Format(_T("%.3f"), _pFileNode->nWC);
 			NormalizeFloatString(_strWC, NFS_TRIMTAIL);
 			_strTmp.Format(_T("A%s"), _strWC);
-			m_pwndList->SetItemText(_i, TFCOL_MACHCOORA, _strTmp);
+			m_pwndList->SetItemText(_nIndex, TFCOL_MACHCOORA, _strTmp);
 
 			// 文件大小
 			// 得到按字节为单位的长度
@@ -705,14 +718,26 @@ void CAdvProgramTaskPage::UpdateTaskFileList(bool bSelRst_/* = false*/)
 				_strTmp.Format("%.3f", _nFileLengthK);
 				NormalizeFloatString(_strTmp, NFS_TRIMTAIL);
 			}
-			m_pwndList->SetItemText(_i, TFCOL_PROGRAMSIZE, _strTmp);
+			m_pwndList->SetItemText(_nIndex, TFCOL_PROGRAMSIZE, _strTmp);
 
 			// 修改时间
 			_strTmp = _pFileNode->nLastTime.Format("%Y-%m-%d  %H:%M");
-			m_pwndList->SetItemText(_i, TFCOL_MODEFYTIME, _strTmp);
+			m_pwndList->SetItemText(_nIndex, TFCOL_MODEFYTIME, _strTmp);
 		}
 
-		m_pwndList->SetItemData(_i, (LPARAM)_i);
+		m_pwndList->SetItemData(_nIndex, (LPARAM)_nIndex);
+	}
+
+	for (_nIndex = _nCountUser; _nIndex < c_nDEFFILES_NUM; _nIndex++)
+	{
+		AdvFileNode* _pFileNode = &m_pAdvTask->m_vecFiles.at(_nIndex);
+		if (_pFileNode->szFileName[0] != 0)
+		{
+			if (_pFileNode->bEnable) 
+			{
+				m_pwndList->SetCheck(_nIndex, false);
+			}
+		}
 	}
 
 	// 设置焦点
