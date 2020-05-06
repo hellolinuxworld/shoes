@@ -266,10 +266,18 @@ void CNcAdvTaskMngTarget::SetCurAdvTask()
 	_tcsncpy_s(_tnCurTask.szTaskName, _szFoldName, _nCount - 1);
 
 	// 加载加工任务文件信息
+    // _nCountUser 用户要显示的列表个数
 	int _nTaskCount = m_AdvTask.m_vecFiles.size();
-	for (int _i = 0; _i < _nTaskCount; _i++)
+    int _nIndexFile = 0;
+    int _nIndexItem = 0;
+	for (; _nIndexItem < _nTaskCount; _nIndexItem++, _nIndexFile++)
 	{
-		AdvFileNode* _pFileNode = &m_AdvTask.m_vecFiles.at(_i);
+        if (_nIndexFile == _nCountUser)
+        {
+            _nIndexFile = c_nDEFFILES_NUM;
+        }
+
+		AdvFileNode* _pFileNode = &m_AdvTask.m_vecFiles.at(_nIndexFile);
 		if (!_pFileNode->bEnable)
 		{
 			continue;
@@ -282,17 +290,17 @@ void CNcAdvTaskMngTarget::SetCurAdvTask()
 		}
 
 		// 加工任务文件
-		_nCount = _countof(_tnCurTask.fns[_i].szFileName);
-		_tcsncpy_s(_tnCurTask.fns[_i].szFileName, _strFullPath, _nCount - 1);
+		_nCount = _countof(_tnCurTask.fns[_nIndexItem].szFileName);
+		_tcsncpy_s(_tnCurTask.fns[_nIndexItem].szFileName, _strFullPath, _nCount - 1);
 
 		// 坐标系
-		_tnCurTask.fns[_i].nCoor = (int)_pFileNode->nCoorNo;
+		_tnCurTask.fns[_nIndexItem].nCoor = (int)_pFileNode->nCoorNo;
 
 		// A轴工件坐标
-		_tnCurTask.fns[_i].nWC = _pFileNode->nWC;
+		_tnCurTask.fns[_nIndexItem].nWC = _pFileNode->nWC;
 
 		// 任务文件加工时间间隔，默认1s
-		_tnCurTask.fns[_i].nInterval = m_nInterval;
+		_tnCurTask.fns[_nIndexItem].nInterval = m_nInterval;
 	}
 
 	CString _strRet;

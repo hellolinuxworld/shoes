@@ -639,22 +639,23 @@ void CAdvProgramTaskPage::UpdateTaskFileList(bool bSelRst_/* = false*/)
 
 	// _nCountUser 用户要显示的列表个数
 	
-	int _nIndex = 0
-	for (; _nIndex < _nVecFileSize; _nIndex++)
+	int _nIndexFile = 0;
+	int _nIndexItem = 0;
+	for (; _nIndexFile < _nVecFileSize; _nIndexFile++, _nIndexItem++)
 	{
-		if (_nIndex == _nCountUser) 
+		if (_nIndexFile == _nCountUser)
 		{
-			_nIndex = c_nDEFFILES_NUM;
-			if (_nIndex >= _nVecFileSize)
+            _nIndexFile = c_nDEFFILES_NUM;
+			if (_nIndexFile >= _nVecFileSize)
 			{
 				break;
 			}
 		}
 
-		AdvFileNode* _pFileNode = &m_pAdvTask->m_vecFiles.at(_nIndex);
+		AdvFileNode* _pFileNode = &m_pAdvTask->m_vecFiles.at(_nIndexFile);
 		LV_ITEM lvi;
 		lvi.mask = LVIF_TEXT | LVIF_IMAGE | LVIF_PARAM;
-		lvi.iItem = _nIndex;
+		lvi.iItem = _nIndexItem;
 		lvi.iSubItem = TFCOL_TECHNOLOGY;
 		lvi.pszText = _pFileNode->szTechName;
 		// 工艺
@@ -663,10 +664,10 @@ void CAdvProgramTaskPage::UpdateTaskFileList(bool bSelRst_/* = false*/)
 		if (_pFileNode->szFileName[0] != 0)
 		{
 			BOOL _bCheck = _pFileNode->bEnable ? TRUE : FALSE;
-			m_pwndList->SetCheck(_nIndex, _bCheck);
+			m_pwndList->SetCheck(_nIndexItem, _bCheck);
 
 			// 加工文件名
-			m_pwndList->SetItemText(_nIndex, TFCOL_PROGRAMNAME, _pFileNode->szFileName);
+			m_pwndList->SetItemText(_nIndexItem, TFCOL_PROGRAMNAME, _pFileNode->szFileName);
 
 			CString _strTmp;
 			// 坐标系
@@ -685,14 +686,14 @@ void CAdvProgramTaskPage::UpdateTaskFileList(bool bSelRst_/* = false*/)
 			{
 				ASSERT(FALSE);
 			}
-			m_pwndList->SetItemText(_nIndex, TFCOL_COORNO, _strTmp);
+			m_pwndList->SetItemText(_nIndexItem, TFCOL_COORNO, _strTmp);
 
 			// A轴工件坐标
 			CString _strWC;
 			_strWC.Format(_T("%.3f"), _pFileNode->nWC);
 			NormalizeFloatString(_strWC, NFS_TRIMTAIL);
 			_strTmp.Format(_T("A%s"), _strWC);
-			m_pwndList->SetItemText(_nIndex, TFCOL_MACHCOORA, _strTmp);
+			m_pwndList->SetItemText(_nIndexItem, TFCOL_MACHCOORA, _strTmp);
 
 			// 文件大小
 			// 得到按字节为单位的长度
@@ -718,27 +719,27 @@ void CAdvProgramTaskPage::UpdateTaskFileList(bool bSelRst_/* = false*/)
 				_strTmp.Format("%.3f", _nFileLengthK);
 				NormalizeFloatString(_strTmp, NFS_TRIMTAIL);
 			}
-			m_pwndList->SetItemText(_nIndex, TFCOL_PROGRAMSIZE, _strTmp);
+			m_pwndList->SetItemText(_nIndexItem, TFCOL_PROGRAMSIZE, _strTmp);
 
 			// 修改时间
 			_strTmp = _pFileNode->nLastTime.Format("%Y-%m-%d  %H:%M");
-			m_pwndList->SetItemText(_nIndex, TFCOL_MODEFYTIME, _strTmp);
+			m_pwndList->SetItemText(_nIndexItem, TFCOL_MODEFYTIME, _strTmp);
 		}
 
-		m_pwndList->SetItemData(_nIndex, (LPARAM)_nIndex);
+		m_pwndList->SetItemData(_nIndexItem, (LPARAM)_nIndexItem);
 	}
 
-	for (_nIndex = _nCountUser; _nIndex < c_nDEFFILES_NUM; _nIndex++)
-	{
-		AdvFileNode* _pFileNode = &m_pAdvTask->m_vecFiles.at(_nIndex);
-		if (_pFileNode->szFileName[0] != 0)
-		{
-			if (_pFileNode->bEnable) 
-			{
-				m_pwndList->SetCheck(_nIndex, false);
-			}
-		}
-	}
+//	for (_nIndexFile = _nCountUser; _nIndexFile < c_nDEFFILES_NUM; _nIndexFile++)
+//	{
+//		AdvFileNode* _pFileNode = &m_pAdvTask->m_vecFiles.at(_nIndexFile);
+//		if (_pFileNode->szFileName[0] != 0)
+//		{
+//			if (_pFileNode->bEnable)
+//			{
+//				m_pwndList->SetCheck(_nIndexFile, false);
+//			}
+//		}
+//	}
 
 	// 设置焦点
 	SetListFocus();
@@ -1224,13 +1225,33 @@ void CAdvProgramTaskPage::OnMoveUp()
 
 	if (_nSel > 0)
 	{
-		int _nItem = m_pwndList->GetItemData(_nSel);
-		AdvFileNode*_pNodeU = &m_pAdvTask->m_vecFiles.at(_nItem - 1);
-		AdvFileNode*_pNodeD = &m_pAdvTask->m_vecFiles.at(_nItem);
+	    // _nCountUser 用户要显示的列表个数
+		int _nItemCurrent = m_pwndList->GetItemData(_nSel);
+        AdvFileNode* _pNodePrevious = NULL;
+        AdvFileNode* _pNodeCurrent = NULL;
+		int _nItemPrevious = 0;
+        if (_nItemCurrent == _nCountUser)
+        {
+            _nItemCurrent = c_nDEFFILES_NUM;
+            _nItemPrevious = _nCountUser - 1;
+        }
+        else if (_nItemCurrent > _nCountUser)
+        {
+            _nItemCurrent = c_nDEFFILES_NUM + _nItemCurrent - _nCountUser;
+            _nItemPrevious = _nItemCurrent - 1;
+        }
+        else
+        {
+            //_nItemCurrent = _nItemCurrent;
+            _nItemPrevious = _nItemCurrent - 1;
+        }
+
+        _pNodePrevious = &m_pAdvTask->m_vecFiles.at(_nItemPrevious);
+        _pNodeCurrent = &m_pAdvTask->m_vecFiles.at(_nItemCurrent);
 		AdvFileNode _NodeM;
-		memcpy(&_NodeM, _pNodeU, sizeof(AdvFileNode));
-		memcpy(_pNodeU, _pNodeD, sizeof(AdvFileNode));
-		memcpy(_pNodeD, &_NodeM, sizeof(AdvFileNode));
+		memcpy(&_NodeM, _pNodePrevious, sizeof(AdvFileNode));
+		memcpy(_pNodePrevious, _pNodeCurrent, sizeof(AdvFileNode));
+		memcpy(_pNodeCurrent, &_NodeM, sizeof(AdvFileNode));
 
 		UpdateTaskFileList();
 
@@ -1287,13 +1308,34 @@ void CAdvProgramTaskPage::OnMoveDown()
 	int _nLastItem = m_pwndList->GetItemCount() - 1;
 	if (_nSel < _nLastItem)
 	{
-		int _nItem = m_pwndList->GetItemData(_nSel);
-		AdvFileNode*_pNodeU = &m_pAdvTask->m_vecFiles.at(_nItem);
-		AdvFileNode*_pNodeD = &m_pAdvTask->m_vecFiles.at(_nItem + 1);
-		AdvFileNode _NodeM;
-		memcpy(&_NodeM, _pNodeD, sizeof(AdvFileNode));
-		memcpy(_pNodeD, _pNodeU, sizeof(AdvFileNode));
-		memcpy(_pNodeU, &_NodeM, sizeof(AdvFileNode));
+        // _nCountUser 用户要显示的列表个数
+        int _nItemCurrent = m_pwndList->GetItemData(_nSel);
+        AdvFileNode* _pNodeNext = NULL;
+        AdvFileNode* _pNodeCurrent = NULL;
+        int _nItemNext = 0;
+        if (_nItemCurrent == _nCountUser)
+        {
+            _nItemCurrent = c_nDEFFILES_NUM;
+            _nItemNext = _nCountUser + 1;
+        }
+        else if (_nItemCurrent > _nCountUser)
+        {
+            _nItemCurrent = c_nDEFFILES_NUM + _nItemCurrent - _nCountUser;
+            _nItemNext = _nItemCurrent + 1;
+        }
+        else
+        {
+            //_nItemCurrent = _nItemCurrent;
+            _nItemNext = _nItemCurrent + 1;
+        }
+
+        _pNodeNext = &m_pAdvTask->m_vecFiles.at(_nItemNext);
+        _pNodeCurrent = &m_pAdvTask->m_vecFiles.at(_nItemCurrent);
+
+        AdvFileNode _NodeM;
+        memcpy(&_NodeM, _pNodeNext, sizeof(AdvFileNode));
+        memcpy(_pNodeNext, _pNodeCurrent, sizeof(AdvFileNode));
+        memcpy(_pNodeCurrent, &_NodeM, sizeof(AdvFileNode));
 
 		UpdateTaskFileList();
 
